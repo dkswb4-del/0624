@@ -43,3 +43,24 @@ print(media_counts)
 print("Type:", type(media_counts))
 print("============================================\n")
 
+# 3. 시리즈를 활용한 막대 차트 시각화
+# 그래프 크기 설정 (가로 10인치, 세로 6인치)
+plt.figure(figsize=(10, 6))
+
+# Seaborn을 활용한 막대 차트 생성
+# 시리즈의 index(언론사명)를 X축으로, values(발행 건수)를 Y축으로 지정합니다.
+sns.barplot(x=media_counts.index, y=media_counts.values, palette="muted")
+
+# 차트 제목 및 축 레이블 설정
+plt.title("주요 언론사별 뉴스 발행량 비교", fontsize=16, fontweight="bold", pad=15)
+plt.xlabel("언론사", fontsize=12, labelpad=10)
+plt.ylabel("뉴스 발행 건수 (건)", fontsize=12, labelpad=10)
+
+# 막대 위에 구체적인 숫자 표시 (가독성 향상)
+for i, value in enumerate(media_counts.values):
+    plt.text(i, value + 0.1, str(value), ha="center", va="bottom", fontsize=11)
+
+# 그래프 출력
+plt.tight_layout()
+plt.show()
+
