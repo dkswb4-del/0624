@@ -23,7 +23,7 @@ df_region['상세지역'] = df_region['통합 분류1'].apply(
 )
 
 df_region['키워드'] = df_region['키워드'].fillna('')
-# 빈문자열이라도 삽입
+# fillna('') 빈문자열이라도 삽입
 all_region_names = list(df_region['상세지역'].dropna().unique())
 
 
