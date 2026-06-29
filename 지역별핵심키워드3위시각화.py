@@ -15,33 +15,36 @@ base_stop_words = {'노인', '참석', '일동', '주민',
                    "지역", "마을", "노인들", "노인분들", "주민들","주민일동",
                    "이날" }
 
-region_mask = df["통합 분류1"].notna() & df["통합 분류1"].str.contains("지역")
+region_mask = df["통합 분류1"].notna() & df["통합 분류1"].str.contains("지역") # & : and / 통합분류가 비어있지않은것과 지역이라는 단어가 들어가있는 애들만 뽑아서 시리즈인 데이터프레임
 df_region = df[region_mask].copy() 
 
 df_region['상세지역'] = df_region['통합 분류1'].apply(
     lambda x: x.split('-')[-1].strip() if '-' in str(x) else x.strip()
 )
-
+#람다 : 1회함수. 스피드가 빠름 / 통합분류컬럼만 시리즈로 가져와서 통합분류 하나하나의 셀이 x /  문자열로 바꾸고 언더바가 있다면 앞부분 진행, 없다면 공백을 빼라.
 df_region['키워드'] = df_region['키워드'].fillna('')
-# fillna('') 빈문자열이라도 삽입
-all_region_names = list(df_region['상세지역'].dropna().unique())
+# fillna('') 빈문자열이라도 삽입 / 빈문자열은 false 로 인식 / 데이터분석에서는 true & false & na 3가지로 분류됨.
+all_region_names = list(df_region['상세지역'].dropna().unique()) # 지역이 겹치지 않게끔, 혹시몰라 공백제거하고 중복제거
 
 
 def get_top_10_keywords(series):   
     all_text = " ".join(series.astype(str))    
     words = [word.strip() for word in all_text.replace(',', ' ').split() if word.strip()]
+    # 쉼표를 공백으로 대신하고, 스플릿:리스트로 자르세요. 공백을 제거하고, 
     top_10 = [item[0] for item in Counter(words).most_common(5)]
     return top_10
 
 def get_clean_keywords(text):
-    if not text: return []
+    if not text: return [] # return : 위 함수를 실행하려면 텍스트가 있어야하는데 공란이면 빈배열을 뱉음.
     words = [word.strip() for word in str(text).replace(',', ' ').split() if word.strip()]    
     clean_words = []
     for word in words:
-        if word in base_stop_words: continue
+        if word in base_stop_words: continue 
         if any(region in word for region in all_region_names): continue
         clean_words.append(word)
     return clean_words
+# base_stop_words과 지역이 제거된 리스트만 뱉음
+
 
 def merge_and_rank(series):
     merged_list = [word for sublist in series for word in sublist]
